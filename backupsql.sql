@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: sql200.infinityfree.com
--- Tempo de geração: 07/08/2026 às 16:08
+-- Tempo de geração: 10/08/2026 às 14:04
 -- Versão do servidor: 11.4.12-MariaDB
 -- Versão do PHP: 7.2.22
 
@@ -52,7 +52,8 @@ INSERT INTO `diario_aulas` (`id`, `materia_id`, `data_aula`, `horario`, `horario
 (4, 4, '2026-08-04', '1ª e 2ª Aulas', NULL, NULL, 'Auditório', 'Palestra sobre inteligência artificial e tour pelo polo.', 0, '', '2026-08-07 16:19:21'),
 (5, 6, '2026-08-05', '1ª e 2ª Aulas', NULL, NULL, 'Sala 06', 'Introdução ao procedimento das aulas. Conteúdos que teremos esse semestre: Noções de lógica (preposições, conectivos e linguagem lógica). Noções da Teoria dos Conjuntos (Conceitos Básicos, Representações, Operações e Conectores Lógicos, Conjuntos Numéricos); Noções sobre Conjuntos Numéricos; Operações com os Números Racionais na forma fracionária e Decimal; Regra de Três; Cálculos de Porcentagem; Potenciação e Radiação; Operações Algébricas com Polinômios, Fatoração e Produtos Notáveis; Equações e Inequações com representação algébricas e Gráficas do 1° e 2° Grau; Sistemas Lineares (Escalonamento); Logaritmos; Funções do 1° e 2° Grau, Exponenciais; Progressões Aritméticas e Geométricas. ', 0, NULL, '2026-08-07 16:26:43'),
 (6, 7, '2026-08-06', '1ª e 2ª Aulas', NULL, NULL, 'Sala 06', 'Introdução e apresentação da matéria. Atividade do dia: Produção Textual - Projete-se Quem é você e onde quer chegar? Teve visto no mesmo.', 1, NULL, '2026-08-07 16:28:37'),
-(7, 10, '2026-08-08', '1ª e 2ª Aulas', NULL, NULL, 'Teams', 'Primeiro projeto integrador do semestre.', 0, NULL, '2026-08-07 19:59:57');
+(7, 10, '2026-08-08', '1ª e 2ª Aulas', NULL, NULL, 'Teams', 'Primeiro projeto integrador do semestre.', 0, NULL, '2026-08-07 19:59:57'),
+(8, 9, '2026-08-07', '2ª Aula', NULL, NULL, 'Sala 06', 'Apresentação da Matéria. Não teve chamada.', 0, '', '2026-08-08 00:10:25');
 
 -- --------------------------------------------------------
 
@@ -106,6 +107,27 @@ INSERT INTO `materias` (`id`, `semestre_id`, `nome`, `codigo`, `professor`, `pro
 (8, 1, 'Inglês I', NULL, 'EDSON MENDES', '', NULL, 'Segunda'),
 (9, 1, 'Contabilidade', NULL, 'MARGARETE GURNIAK', '', NULL, 'Segunda'),
 (10, 1, 'Projeto Integrador em Gestão Empresarial I', NULL, '?', '', NULL, 'Segunda');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `noticias_eventos`
+--
+
+CREATE TABLE `noticias_eventos` (
+  `id` int(11) NOT NULL,
+  `titulo` varchar(200) NOT NULL,
+  `subtitulo` varchar(255) DEFAULT NULL,
+  `conteudo` text NOT NULL,
+  `tipo` enum('Noticia','Evento','Aviso Institucional','Palestra','Estágio/Vaga') NOT NULL DEFAULT 'Noticia',
+  `data_evento` date DEFAULT NULL,
+  `imagem_capa` varchar(255) DEFAULT NULL,
+  `fixado` tinyint(1) DEFAULT 0,
+  `status` enum('rascunho','publicado') DEFAULT 'publicado',
+  `usuario_id` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -184,6 +206,13 @@ ALTER TABLE `materias`
   ADD KEY `semestre_id` (`semestre_id`);
 
 --
+-- Índices de tabela `noticias_eventos`
+--
+ALTER TABLE `noticias_eventos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_noticias_usuario` (`usuario_id`);
+
+--
 -- Índices de tabela `semestres`
 --
 ALTER TABLE `semestres`
@@ -204,7 +233,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de tabela `diario_aulas`
 --
 ALTER TABLE `diario_aulas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de tabela `eventos_calendario`
@@ -217,6 +246,12 @@ ALTER TABLE `eventos_calendario`
 --
 ALTER TABLE `materias`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT de tabela `noticias_eventos`
+--
+ALTER TABLE `noticias_eventos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `semestres`
@@ -251,6 +286,12 @@ ALTER TABLE `eventos_calendario`
 --
 ALTER TABLE `materias`
   ADD CONSTRAINT `materias_ibfk_1` FOREIGN KEY (`semestre_id`) REFERENCES `semestres` (`id`) ON DELETE CASCADE;
+
+--
+-- Restrições para tabelas `noticias_eventos`
+--
+ALTER TABLE `noticias_eventos`
+  ADD CONSTRAINT `fk_noticias_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
