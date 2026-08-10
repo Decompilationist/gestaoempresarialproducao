@@ -14,7 +14,6 @@ try {
     $stmt->execute();
     $noticias = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    // Exibe o erro exato do banco caso haja algum problema de coluna/tabela
     die("Erro na consulta do banco de dados: " . $e->getMessage());
 }
 ?>
@@ -26,6 +25,18 @@ try {
     <title>Notícias e Avisos - Fatec</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        .card-img-hover {
+            max-height: 250px; 
+            object-fit: cover; 
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+        .card-img-hover:hover {
+            opacity: 0.9;
+            transform: scale(1.01);
+        }
+    </style>
 </head>
 <body class="bg-light">
 
@@ -45,7 +56,16 @@ try {
                 <div class="col-md-6 mb-4">
                     <div class="card h-100 <?= $item['fixado'] ? 'border-warning shadow-sm' : '' ?>">
                         <?php if (!empty($item['imagem_capa']) && file_exists('uploads/' . $item['imagem_capa'])): ?>
-                            <img src="uploads/<?= htmlspecialchars($item['imagem_capa']) ?>" class="card-img-top" alt="Capa" style="max-height: 250px; object-fit: cover;">
+                            <div class="position-relative">
+                                <img src="uploads/<?= htmlspecialchars($item['imagem_capa']) ?>" 
+                                     class="card-img-top card-img-hover img-expandivel" 
+                                     alt="Capa"
+                                     data-titulo="<?= htmlspecialchars($item['titulo']) ?>"
+                                     data-img="uploads/<?= htmlspecialchars($item['imagem_capa']) ?>">
+                                <span class="badge bg-dark position-absolute bottom-0 end-0 m-2 opacity-75">
+                                    <i class="bi bi-zoom-in"></i> Clique para ampliar
+                                </span>
+                            </div>
                         <?php endif; ?>
 
                         <div class="card-body">
@@ -79,6 +99,40 @@ try {
     </div>
 </div>
 
+<!-- MODAL PARA AMPLIAR A IMAGEM -->
+<div class="modal fade" id="modalImagem" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title fs-6" id="modalImagemTitulo"></h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center p-2">
+        <img src="" id="modalImagemSrc" class="img-fluid rounded" alt="Imagem ampliada">
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var modalImagem = new bootstrap.Modal(document.getElementById('modalImagem'));
+    var modalImgSrc = document.getElementById('modalImagemSrc');
+    var modalImgTitulo = document.getElementById('modalImagemTitulo');
+
+    document.querySelectorAll('.img-expandivel').forEach(function(img) {
+        img.addEventListener('click', function() {
+            var src = this.getAttribute('data-img');
+            var titulo = this.getAttribute('data-titulo');
+            
+            modalImgSrc.setAttribute('src', src);
+            modalImgTitulo.textContent = titulo;
+            
+            modalImagem.show();
+        });
+    });
+});
+</script>
 </body>
 </html>
