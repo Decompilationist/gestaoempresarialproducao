@@ -2,13 +2,16 @@
 // noticias.php
 require_once __DIR__ . '/includes/config.php';
 
-// Consulta notícias no banco de dados
+// Consulta notícias ordenadas pela Data do Evento (ou Data de Criação caso não haja evento)
 try {
     $stmt = $pdo->prepare("
         SELECT n.*, u.nome AS autor 
         FROM noticias_eventos n 
         LEFT JOIN usuarios u ON n.usuario_id = u.id 
-        ORDER BY n.fixado DESC, n.created_at DESC 
+        ORDER BY 
+            n.fixado DESC, 
+            COALESCE(n.data_evento, n.created_at) DESC, 
+            n.created_at DESC 
         LIMIT 10
     ");
     $stmt->execute();
@@ -71,7 +74,7 @@ try {
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="badge bg-primary"><?= htmlspecialchars($item['tipo']) ?></span>
-                                <small class="text-muted"><?= date('d/m/Y', strtotime($item['created_at'])) ?></small>
+                                <small class="text-muted">Publicado em: <?= date('d/m/Y', strtotime($item['created_at'])) ?></small>
                             </div>
                             
                             <h5 class="card-title"><?= htmlspecialchars($item['titulo']) ?></h5>
@@ -83,7 +86,7 @@ try {
                             <p class="card-text"><?= nl2br(htmlspecialchars($item['conteudo'])) ?></p>
                             
                             <?php if (!empty($item['data_evento'])): ?>
-                                <div class="alert alert-info py-1 px-2 mt-2">
+                                <div class="alert alert-info py-1 px-2 mt-2 mb-0">
                                     📅 <strong>Data do Evento:</strong> <?= date('d/m/Y', strtotime($item['data_evento'])) ?>
                                 </div>
                             <?php endif; ?>
