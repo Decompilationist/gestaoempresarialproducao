@@ -83,6 +83,24 @@ if (isset($_GET['acao']) && $_GET['acao'] === 'excluir_evento') {
     exit;
 }
 
+if (isset($_GET['acao']) && $_GET['acao'] === 'excluir_noticia') {
+    $id_noticia = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+    if ($id_noticia) {
+        $stmtFoto = $pdo->prepare("SELECT imagem_capa FROM noticias_eventos WHERE id = ?");
+        $stmtFoto->execute([$id_noticia]);
+        $noticia = $stmtFoto->fetch();
+        if ($noticia && $noticia['imagem_capa'] && file_exists('uploads/' . $noticia['imagem_capa'])) {
+            unlink('uploads/' . $noticia['imagem_capa']);
+        }
+
+        $stmt = $pdo->prepare("DELETE FROM noticias_eventos WHERE id = ?");
+        $stmt->execute([$id_noticia]);
+        $_SESSION['msg'] = "Notícia/Aviso excluído com sucesso!";
+    }
+    header("Location: admin.php");
+    exit;
+}
+
 // ==========================================
 // 2. PROCESSAMENTO DE FORMULÁRIOS (POST)
 // ==========================================
@@ -159,7 +177,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     mkdir('uploads', 0755, true);
                 }
                 if (move_uploaded_file($_FILES['imagem']['tmp_name'], 'uploads/' . $novo_nome)) {
-                    // Remove imagem anterior se existir
                     if ($nome_imagem && file_exists('uploads/' . $nome_imagem)) {
                         unlink('uploads/' . $nome_imagem);
                     }
@@ -214,6 +231,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         header("Location: admin.php");
         exit;
     }
+
+    // SALVAR NOTÍCIA / AVISO INSTITUCIONAL
+    if ($_POST['action'] === 'salvar_noticia') {
+        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+        $titulo = trim($_POST['titulo'] ?? '');
+        $subtitulo = trim($_POST['subtitulo'] ?? '');
+        $conteudo = trim($_POST['conteudo'] ?? '');
+        $tipo = trim($_POST['tipo'] ?? 'Noticia');
+        $data_evento = !empty($_POST['data_evento']) ? $_POST['data_evento'] : NULL;
+        $fixado = isset($_POST['fixado']) ? 1 : 0;
+        $usuario_id = $_SESSION['usuario_id'] ?? $_SESSION['user_id'] ?? 1;
+
+        $nome_imagem = $_POST['imagem_atual'] ?? NULL;
+        $erro_upload = false;
+
+        if (isset($_FILES['imagem_capa']) && $_FILES['imagem_capa']['error'] === UPLOAD_ERR_OK) {
+            $ext = strtolower(pathinfo($_FILES['imagem_capa']['name'], PATHINFO_EXTENSION));
+            $extensoes_permitidas = ['jpg', 'jpeg', 'png', 'webp'];
+
+            if (in_array($ext, $extensoes_permitidas)) {
+                $novo_nome = 'noticia_' . uniqid() . '.' . $ext;
+                if (!is_dir('uploads')) {
+                    mkdir('uploads', 0755, true);
+                }
+                if (move_uploaded_file($_FILES['imagem_capa']['tmp_name'], 'uploads/' . $novo_nome)) {
+                    if ($nome_imagem && file_exists('uploads/' . $nome_imagem)) {
+                        unlink('uploads/' . $nome_imagem);
+                    }
+                    $nome_imagem = $novo_nome;
+                }
+            } else {
+                $_SESSION['msg_erro'] = "Formato de imagem inválido! Envie JPG, PNG ou WEBP.";
+                $erro_upload = true;
+            }
+        }
+
+        if (!$erro_upload && !empty($titulo) && !empty($conteudo)) {
+            if ($id) {
+                $stmt = $pdo->prepare("UPDATE noticias_eventos SET titulo = ?, subtitulo = ?, conteudo = ?, tipo = ?, data_evento = ?, imagem_capa = ?, fixado = ? WHERE id = ?");
+                $stmt->execute([$titulo, $subtitulo, $conteudo, $tipo, $data_evento, $nome_imagem, $fixado, $id]);
+                $_SESSION['msg'] = "Notícia/Aviso atualizado com sucesso!";
+            } else {
+                $stmt = $pdo->prepare("INSERT INTO noticias_eventos (titulo, subtitulo, conteudo, tipo, data_evento, imagem_capa, fixado, usuario_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$titulo, $subtitulo, $conteudo, $tipo, $data_evento, $nome_imagem, $fixado, $usuario_id]);
+                $_SESSION['msg'] = "Notícia/Aviso cadastrado com sucesso!";
+            }
+        } elseif (!$erro_upload) {
+            $_SESSION['msg_erro'] = "Preencha pelo menos o título e o conteúdo da notícia.";
+        }
+
+        header("Location: admin.php");
+        exit;
+    }
 }
 
 // ==========================================
@@ -248,6 +318,13 @@ if (isset($_GET['editar_evento'])) {
     $evento_edicao = $stmt->fetch();
 }
 
+$noticia_edicao = NULL;
+if (isset($_GET['editar_noticia'])) {
+    $stmt = $pdo->prepare("SELECT * FROM noticias_eventos WHERE id = ?");
+    $stmt->execute([$_GET['editar_noticia']]);
+    $noticia_edicao = $stmt->fetch();
+}
+
 $semestres = $pdo->query("SELECT * FROM semestres ORDER BY id ASC")->fetchAll();
 $materias = $pdo->query("SELECT m.*, s.nome as semestre FROM materias m JOIN semestres s ON m.semestre_id = s.id ORDER BY s.id DESC, m.nome ASC")->fetchAll();
 
@@ -263,6 +340,13 @@ $eventos_lista = $pdo->query("
     FROM eventos_calendario e 
     JOIN materias m ON e.materia_id = m.id 
     ORDER BY e.data_evento DESC, e.id DESC
+")->fetchAll();
+
+$noticias_lista = $pdo->query("
+    SELECT n.*, u.nome as autor_nome 
+    FROM noticias_eventos n 
+    LEFT JOIN usuarios u ON n.usuario_id = u.id 
+    ORDER BY n.fixado DESC, n.created_at DESC
 ")->fetchAll();
 ?>
 <!DOCTYPE html>
@@ -280,6 +364,7 @@ $eventos_lista = $pdo->query("
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4">
         <h2 class="h3 mb-0">Painel Administrativo</h2>
         <div class="d-flex gap-2">
+            <a href="noticias.php" class="btn btn-purple text-white btn-sm" style="background-color: #6f42c1;"><i class="bi bi-newspaper"></i> Ver Notícias</a>
             <a href="exportar_excel.php" class="btn btn-success btn-sm"><i class="bi bi-file-earmark-excel"></i> Baixar Excel</a>
             <a href="index.php" class="btn btn-secondary btn-sm"><i class="bi bi-arrow-left"></i> Painel Geral</a>
         </div>
@@ -302,7 +387,7 @@ $eventos_lista = $pdo->query("
     <!-- FORMULÁRIOS DA PÁGINA -->
     <div class="row g-3">
         <!-- SEMESTRE -->
-        <div class="col-12 col-md-6 col-xl-3">
+        <div class="col-12 col-md-6 col-xl-2.4">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
                     <span class="fw-bold"><?= $semestre_edicao ? 'Editar Semestre' : 'Novo Semestre' ?></span>
@@ -321,14 +406,14 @@ $eventos_lista = $pdo->query("
                             <label class="form-label">Nome do Semestre</label>
                             <input type="text" name="nome" class="form-control" placeholder="Ex: 1º Semestre" value="<?= $semestre_edicao ? htmlspecialchars($semestre_edicao['nome']) : '' ?>" required>
                         </div>
-                        <button type="submit" class="btn btn-warning w-100 fw-bold"><?= $semestre_edicao ? 'Atualizar Semestre' : 'Cadastrar Semestre' ?></button>
+                        <button type="submit" class="btn btn-warning w-100 fw-bold"><?= $semestre_edicao ? 'Atualizar' : 'Cadastrar' ?></button>
                     </form>
                 </div>
             </div>
         </div>
 
         <!-- MATÉRIA -->
-        <div class="col-12 col-md-6 col-xl-3">
+        <div class="col-12 col-md-6 col-xl-2.4">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
                     <span class="fw-bold"><?= $materia_edicao ? 'Editar Matéria' : 'Nova Matéria' ?></span>
@@ -366,14 +451,14 @@ $eventos_lista = $pdo->query("
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-success w-100 fw-bold"><?= $materia_edicao ? 'Atualizar Matéria' : 'Cadastrar Matéria' ?></button>
+                        <button type="submit" class="btn btn-success w-100 fw-bold"><?= $materia_edicao ? 'Atualizar' : 'Cadastrar' ?></button>
                     </form>
                 </div>
             </div>
         </div>
 
         <!-- AULA -->
-        <div class="col-12 col-md-6 col-xl-3">
+        <div class="col-12 col-md-6 col-xl-2.4">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <span class="fw-bold"><?= $aula_edicao ? 'Editar Aula' : 'Lançar Aula' ?></span>
@@ -433,14 +518,14 @@ $eventos_lista = $pdo->query("
                                 <small class="text-success d-block mt-1"><i class="bi bi-image"></i> Imagem anexada</small>
                             <?php endif; ?>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100 fw-bold"><?= $aula_edicao ? 'Atualizar Aula' : 'Salvar Aula' ?></button>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold"><?= $aula_edicao ? 'Atualizar' : 'Salvar' ?></button>
                     </form>
                 </div>
             </div>
         </div>
 
-        <!-- EVENTO -->
-        <div class="col-12 col-md-6 col-xl-3">
+        <!-- EVENTO MATÉRIA -->
+        <div class="col-12 col-md-6 col-xl-2.4">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
                     <span class="fw-bold"><?= $evento_edicao ? 'Editar Evento' : 'Agendar Evento' ?></span>
@@ -483,7 +568,68 @@ $eventos_lista = $pdo->query("
                             <label class="form-label">Descrição</label>
                             <input type="text" name="descricao" class="form-control" value="<?= $evento_edicao ? htmlspecialchars($evento_edicao['descricao']) : '' ?>" required>
                         </div>
-                        <button type="submit" class="btn btn-danger w-100 fw-bold"><?= $evento_edicao ? 'Atualizar Evento' : 'Agendar Evento' ?></button>
+                        <button type="submit" class="btn btn-danger w-100 fw-bold"><?= $evento_edicao ? 'Atualizar' : 'Agendar' ?></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOTÍCIA / AVISO INSTITUCIONAL -->
+        <div class="col-12 col-md-6 col-xl-2.4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header text-white d-flex justify-content-between align-items-center" style="background-color: #6f42c1;">
+                    <span class="fw-bold"><?= $noticia_edicao ? 'Editar Notícia' : 'Nova Notícia/Aviso' ?></span>
+                    <?php if ($noticia_edicao): ?>
+                        <a href="admin.php" class="btn btn-sm btn-light">Cancelar</a>
+                    <?php endif; ?>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="action" value="salvar_noticia">
+                        <?php if ($noticia_edicao): ?>
+                            <input type="hidden" name="id" value="<?= $noticia_edicao['id'] ?>">
+                            <input type="hidden" name="imagem_atual" value="<?= htmlspecialchars($noticia_edicao['imagem_capa'] ?? '') ?>">
+                        <?php endif; ?>
+
+                        <div class="mb-2">
+                            <label class="form-label">Título</label>
+                            <input type="text" name="titulo" class="form-control" placeholder="Ex: Feira de Profissões 2026" value="<?= $noticia_edicao ? htmlspecialchars($noticia_edicao['titulo']) : '' ?>" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Subtítulo (Opcional)</label>
+                            <input type="text" name="subtitulo" class="form-control" placeholder="Resumo em uma linha" value="<?= $noticia_edicao ? htmlspecialchars($noticia_edicao['subtitulo']) : '' ?>">
+                        </div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-6">
+                                <label class="form-label">Tipo</label>
+                                <select name="tipo" class="form-select" required>
+                                    <?php $tipos = ['Noticia', 'Evento', 'Aviso Institucional', 'Palestra', 'Estágio/Vaga']; ?>
+                                    <?php foreach ($tipos as $t): ?>
+                                        <option value="<?= $t ?>" <?= ($noticia_edicao && $noticia_edicao['tipo'] == $t) ? 'selected' : '' ?>><?= $t ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">Data Evento</label>
+                                <input type="date" name="data_evento" class="form-control" value="<?= $noticia_edicao ? $noticia_edicao['data_evento'] : '' ?>">
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Conteúdo Completo</label>
+                            <textarea name="conteudo" class="form-control" rows="2" required><?= $noticia_edicao ? htmlspecialchars($noticia_edicao['conteudo']) : '' ?></textarea>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input type="checkbox" name="fixado" class="form-check-input" id="fix" <?= ($noticia_edicao && $noticia_edicao['fixado']) ? 'checked' : '' ?>>
+                            <label class="form-check-label small" for="fix">Fixar no topo?</label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Capa / Imagem</label>
+                            <input type="file" name="imagem_capa" class="form-control form-control-sm" accept="image/*">
+                            <?php if ($noticia_edicao && $noticia_edicao['imagem_capa']): ?>
+                                <small class="text-success d-block mt-1"><i class="bi bi-image"></i> Capa cadastrada</small>
+                            <?php endif; ?>
+                        </div>
+                        <button type="submit" class="btn text-white w-100 fw-bold" style="background-color: #6f42c1;"><?= $noticia_edicao ? 'Atualizar' : 'Publicar' ?></button>
                     </form>
                 </div>
             </div>
@@ -493,7 +639,7 @@ $eventos_lista = $pdo->query("
     <!-- LISTAGENS COM TABELAS RESPONSIVAS -->
     <div class="row g-3 mt-1">
         <!-- SEMESTRES -->
-        <div class="col-12 col-md-6 col-xl-3">
+        <div class="col-12 col-md-6 col-xl-2">
             <div class="card shadow-sm">
                 <div class="card-header bg-dark text-white fw-bold">Semestres</div>
                 <div class="table-responsive" style="max-height: 350px;">
@@ -521,7 +667,7 @@ $eventos_lista = $pdo->query("
         </div>
 
         <!-- MATÉRIAS -->
-        <div class="col-12 col-md-6 col-xl-3">
+        <div class="col-12 col-md-6 col-xl-2.5">
             <div class="card shadow-sm">
                 <div class="card-header bg-dark text-white fw-bold">Matérias & Professores</div>
                 <div class="table-responsive" style="max-height: 350px;">
@@ -558,7 +704,7 @@ $eventos_lista = $pdo->query("
         </div>
 
         <!-- AULAS LANÇADAS -->
-        <div class="col-12 col-md-6 col-xl-3">
+        <div class="col-12 col-md-6 col-xl-2.5">
             <div class="card shadow-sm">
                 <div class="card-header bg-dark text-white fw-bold">Aulas Lançadas</div>
                 <div class="table-responsive" style="max-height: 350px;">
@@ -594,8 +740,8 @@ $eventos_lista = $pdo->query("
             </div>
         </div>
 
-        <!-- EVENTOS -->
-        <div class="col-12 col-md-6 col-xl-3">
+        <!-- EVENTOS MATÉRIA -->
+        <div class="col-12 col-md-6 col-xl-2.5">
             <div class="card shadow-sm">
                 <div class="card-header bg-dark text-white fw-bold">Provas / Eventos</div>
                 <div class="table-responsive" style="max-height: 350px;">
@@ -617,6 +763,46 @@ $eventos_lista = $pdo->query("
                                 <td class="text-end">
                                     <a href="admin.php?editar_evento=<?= $ev['id'] ?>" class="btn btn-sm btn-outline-danger"><i class="bi bi-pencil"></i></a>
                                     <a href="admin.php?acao=excluir_evento&id=<?= $ev['id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Excluir este evento?')"><i class="bi bi-trash"></i></a>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOTÍCIAS & AVISOS -->
+        <div class="col-12 col-md-6 col-xl-2.5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white fw-bold d-flex justify-content-between align-items-center">
+                    <span>Notícias & Avisos</span>
+                    <span class="badge bg-purple" style="background-color: #6f42c1;"><?= count($noticias_lista) ?></span>
+                </div>
+                <div class="table-responsive" style="max-height: 350px;">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Notícia / Categoria</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($noticias_lista as $not): ?>
+                            <tr>
+                                <td>
+                                    <?php if ($not['fixado']): ?>
+                                        <span class="badge bg-warning text-dark"><i class="bi bi-pin-angle-fill"></i> Fixado</span>
+                                    <?php endif; ?>
+                                    <span class="badge bg-secondary"><?= htmlspecialchars($not['tipo']) ?></span>
+                                    <strong class="d-block mt-1"><?= htmlspecialchars($not['titulo']) ?></strong>
+                                    <small class="text-muted d-block">
+                                        Por: <?= htmlspecialchars($not['autor_nome'] ?? 'Admin') ?>
+                                    </small>
+                                </td>
+                                <td class="text-end">
+                                    <a href="admin.php?editar_noticia=<?= $not['id'] ?>" class="btn btn-sm btn-outline-purple" style="color: #6f42c1; border-color: #6f42c1;"><i class="bi bi-pencil"></i></a>
+                                    <a href="admin.php?acao=excluir_noticia&id=<?= $not['id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Excluir esta notícia?')"><i class="bi bi-trash"></i></a>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
