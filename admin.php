@@ -636,14 +636,17 @@ $noticias_lista = $pdo->query("
         </div>
     </div>
 
-    <!-- LISTAGENS COM TABELAS RESPONSIVAS -->
+    <!-- LISTAGENS COM TABELAS RESPONSIVAS E PESQUISA -->
     <div class="row g-3 mt-1">
         <!-- SEMESTRES -->
         <div class="col-12 col-md-6 col-xl-2">
             <div class="card shadow-sm">
-                <div class="card-header bg-dark text-white fw-bold">Semestres</div>
+                <div class="card-header bg-dark text-white fw-bold d-flex flex-column gap-2">
+                    <span>Semestres</span>
+                    <input type="text" class="form-control form-control-sm tabela-busca" placeholder="🔍 Buscar..." data-target="tabela-semestres">
+                </div>
                 <div class="table-responsive" style="max-height: 350px;">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0" id="tabela-semestres">
                         <thead>
                             <tr>
                                 <th>Nome</th>
@@ -669,9 +672,12 @@ $noticias_lista = $pdo->query("
         <!-- MATÉRIAS -->
         <div class="col-12 col-md-6 col-xl-2.5">
             <div class="card shadow-sm">
-                <div class="card-header bg-dark text-white fw-bold">Matérias & Professores</div>
+                <div class="card-header bg-dark text-white fw-bold d-flex flex-column gap-2">
+                    <span>Matérias & Professores</span>
+                    <input type="text" class="form-control form-control-sm tabela-busca" placeholder="🔍 Buscar matéria/prof..." data-target="tabela-materias">
+                </div>
                 <div class="table-responsive" style="max-height: 350px;">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0" id="tabela-materias">
                         <thead>
                             <tr>
                                 <th>Matéria / Docente</th>
@@ -706,9 +712,12 @@ $noticias_lista = $pdo->query("
         <!-- AULAS LANÇADAS -->
         <div class="col-12 col-md-6 col-xl-2.5">
             <div class="card shadow-sm">
-                <div class="card-header bg-dark text-white fw-bold">Aulas Lançadas</div>
+                <div class="card-header bg-dark text-white fw-bold d-flex flex-column gap-2">
+                    <span>Aulas Lançadas</span>
+                    <input type="text" class="form-control form-control-sm tabela-busca" placeholder="🔍 Buscar aula..." data-target="tabela-aulas">
+                </div>
                 <div class="table-responsive" style="max-height: 350px;">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0" id="tabela-aulas">
                         <thead>
                             <tr>
                                 <th>Data / Matéria / Sala</th>
@@ -743,9 +752,12 @@ $noticias_lista = $pdo->query("
         <!-- EVENTOS MATÉRIA -->
         <div class="col-12 col-md-6 col-xl-2.5">
             <div class="card shadow-sm">
-                <div class="card-header bg-dark text-white fw-bold">Provas / Eventos</div>
+                <div class="card-header bg-dark text-white fw-bold d-flex flex-column gap-2">
+                    <span>Provas / Eventos</span>
+                    <input type="text" class="form-control form-control-sm tabela-busca" placeholder="🔍 Buscar evento..." data-target="tabela-eventos">
+                </div>
                 <div class="table-responsive" style="max-height: 350px;">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0" id="tabela-eventos">
                         <thead>
                             <tr>
                                 <th>Data / Evento</th>
@@ -775,12 +787,15 @@ $noticias_lista = $pdo->query("
         <!-- NOTÍCIAS & AVISOS -->
         <div class="col-12 col-md-6 col-xl-2.5">
             <div class="card shadow-sm">
-                <div class="card-header bg-dark text-white fw-bold d-flex justify-content-between align-items-center">
-                    <span>Notícias & Avisos</span>
-                    <span class="badge bg-purple" style="background-color: #6f42c1;"><?= count($noticias_lista) ?></span>
+                <div class="card-header bg-dark text-white fw-bold d-flex flex-column gap-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>Notícias & Avisos</span>
+                        <span class="badge bg-purple" style="background-color: #6f42c1;"><?= count($noticias_lista) ?></span>
+                    </div>
+                    <input type="text" class="form-control form-control-sm tabela-busca" placeholder="🔍 Buscar notícia..." data-target="tabela-noticias">
                 </div>
                 <div class="table-responsive" style="max-height: 350px;">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0" id="tabela-noticias">
                         <thead>
                             <tr>
                                 <th>Notícia / Categoria</th>
@@ -815,5 +830,31 @@ $noticias_lista = $pdo->query("
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- SCRIPT DE BUSCA RÁPIDA NAS TABELAS -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.tabela-busca').forEach(function (input) {
+        input.addEventListener('input', function () {
+            const termoBusca = this.value.toLowerCase().trim();
+            const targetId = this.getAttribute('data-target');
+            const tabela = document.getElementById(targetId);
+
+            if (!tabela) return;
+
+            const linhas = tabela.querySelectorAll('tbody tr');
+
+            linhas.forEach(function (linha) {
+                const textoLinha = linha.textContent.toLowerCase();
+                if (textoLinha.includes(termoBusca)) {
+                    linha.style.display = '';
+                } else {
+                    linha.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+</script>
 </body>
 </html>
