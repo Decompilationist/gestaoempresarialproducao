@@ -29,9 +29,11 @@ $stmtMat = $pdo->prepare("SELECT * FROM materias WHERE semestre_id = ? ORDER BY 
 $stmtMat->execute([$semestre_id]);
 $materias = $stmtMat->fetchAll();
 
-// Filtros adicionais do diário
-$materia_filtro = $_GET['materia_id'] ?? '';
-$data_filtro    = $_GET['data_filtro'] ?? '';
+// Filtros do diário (Mês e Ano)
+$materia_filtro   = $_GET['materia_id'] ?? '';
+$data_filtro      = $_GET['data_filtro'] ?? '';
+$mes_filtro       = $_GET['mes_filtro'] ?? date('m');
+$ano_filtro       = $_GET['ano_filtro'] ?? date('Y');
 $apenas_pendentes = isset($_GET['apenas_pendentes']) && $_GET['apenas_pendentes'] == '1';
 
 // Query Dinâmica do Diário de Bordo
@@ -48,15 +50,22 @@ if ($materia_filtro) {
     $sqlAulas .= " AND d.materia_id = :materia_id";
     $params[':materia_id'] = $materia_filtro;
 }
+
+// Se não houver filtro de data exata, filtra por Mês e Ano selecionados
 if ($data_filtro) {
     $sqlAulas .= " AND d.data_aula = :data_filtro";
     $params[':data_filtro'] = $data_filtro;
+} else {
+    $sqlAulas .= " AND MONTH(d.data_aula) = :mes AND YEAR(d.data_aula) = :ano";
+    $params[':mes'] = $mes_filtro;
+    $params[':ano'] = $ano_filtro;
 }
+
 if ($apenas_pendentes) {
     $sqlAulas .= " AND d.tem_atividade = 1";
 }
 
-$sqlAulas .= " ORDER BY d.data_aula DESC, d.horario ASC LIMIT 30";
+$sqlAulas .= " ORDER BY d.data_aula DESC, d.horario ASC";
 
 $stmtAulas = $pdo->prepare($sqlAulas);
 $stmtAulas->execute($params);
@@ -80,21 +89,10 @@ $proximos_eventos = $stmtProximos->fetchAll();
 
 <style>
 @media (max-width: 768px) {
-    .fc .fc-toolbar-title {
-        font-size: 1.1rem !important;
-    }
-    .fc .fc-button {
-        padding: 0.25rem 0.4rem !important;
-        font-size: 0.75rem !important;
-    }
-    .fc .fc-toolbar {
-        flex-wrap: wrap;
-        gap: 0.4rem;
-        justify-content: center !important;
-    }
-    .fc-col-header-cell-cushion {
-        font-size: 0.8rem;
-    }
+    .fc .fc-toolbar-title { font-size: 1.1rem !important; }
+    .fc .fc-button { padding: 0.25rem 0.4rem !important; font-size: 0.75rem !important; }
+    .fc .fc-toolbar { flex-wrap: wrap; gap: 0.4rem; justify-content: center !important; }
+    .fc-col-header-cell-cushion { font-size: 0.8rem; }
 }
 .card-hover {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -102,6 +100,13 @@ $proximos_eventos = $stmtProximos->fetchAll();
 .card-hover:hover {
     transform: translateY(-2px);
     box-shadow: 0 .4rem .8rem rgba(0,0,0,.08)!important;
+}
+.text-truncate-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 </style>
 
@@ -140,9 +145,9 @@ $proximos_eventos = $stmtProximos->fetchAll();
 <div class="card shadow-sm border-0 mb-4 bg-white">
     <div class="card-body">
         <form method="GET" class="row g-3 align-items-end">
-            <!-- Filtro Semestre -->
-            <div class="col-md-3 col-sm-6">
-                <label class="form-label fw-bold small text-muted">Semestre Letivo</label>
+            <!-- Semestre -->
+            <div class="col-md-2 col-sm-6">
+                <label class="form-label fw-bold small text-muted">Semestre</label>
                 <select name="semestre_id" class="form-select" onchange="this.form.submit()">
                     <?php foreach($semestres as $s): ?>
                         <option value="<?= $s['id'] ?>" <?= $s['id'] == $semestre_id ? 'selected' : '' ?>>
@@ -152,9 +157,34 @@ $proximos_eventos = $stmtProximos->fetchAll();
                 </select>
             </div>
 
-            <!-- Filtro Matéria/Professor -->
+            <!-- Mês -->
+            <div class="col-md-2 col-sm-6">
+                <label class="form-label fw-bold small text-muted">Mês</label>
+                <select name="mes_filtro" class="form-select" onchange="this.form.submit()">
+                    <?php 
+                    $meses = [1=>'Janeiro', 2=>'Fevereiro', 3=>'Março', 4=>'Abril', 5=>'Maio', 6=>'Junho', 7=>'Julho', 8=>'Agosto', 9=>'Setembro', 10=>'Outubro', 11=>'Novembro', 12=>'Dezembro'];
+                    foreach($meses as $num => $nome): 
+                    ?>
+                        <option value="<?= sprintf('%02d', $num) ?>" <?= sprintf('%02d', $num) == $mes_filtro ? 'selected' : '' ?>>
+                            <?= $nome ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <!-- Ano -->
+            <div class="col-md-2 col-sm-6">
+                <label class="form-label fw-bold small text-muted">Ano</label>
+                <select name="ano_filtro" class="form-select" onchange="this.form.submit()">
+                    <?php for($a = date('Y'); $a >= date('Y') - 3; $a--): ?>
+                        <option value="<?= $a ?>" <?= $a == $ano_filtro ? 'selected' : '' ?>><?= $a ?></option>
+                    <?php endfor; ?>
+                </select>
+            </div>
+
+            <!-- Matéria/Professor -->
             <div class="col-md-3 col-sm-6">
-                <label class="form-label fw-bold small text-muted">Matéria / Professor</label>
+                <label class="form-label fw-bold small text-muted">Matéria</label>
                 <select name="materia_id" class="form-select" onchange="this.form.submit()">
                     <option value="">Todas as matérias</option>
                     <?php foreach($materias as $m): ?>
@@ -163,12 +193,6 @@ $proximos_eventos = $stmtProximos->fetchAll();
                         </option>
                     <?php endforeach; ?>
                 </select>
-            </div>
-
-            <!-- NOVO: Filtro por Data Específica -->
-            <div class="col-md-2 col-sm-6">
-                <label class="form-label fw-bold small text-muted">Data da Aula</label>
-                <input type="date" name="data_filtro" class="form-control" value="<?= htmlspecialchars($data_filtro) ?>" onchange="this.form.submit()">
             </div>
 
             <!-- Checkbox Pendências -->
@@ -181,8 +205,8 @@ $proximos_eventos = $stmtProximos->fetchAll();
                 </div>
             </div>
 
-            <div class="col-md-2 col-12">
-                <a href="index.php?semestre_id=<?= $semestre_id ?>" class="btn btn-outline-secondary w-100"><i class="bi bi-x-circle"></i> Limpar</a>
+            <div class="col-md-1 col-12">
+                <a href="index.php?semestre_id=<?= $semestre_id ?>" class="btn btn-outline-secondary w-100" title="Limpar Filtros"><i class="bi bi-x-circle"></i></a>
             </div>
         </form>
     </div>
@@ -218,7 +242,7 @@ $proximos_eventos = $stmtProximos->fetchAll();
               <div class="col-12">
                   <div class="alert alert-info text-center py-4 border-0 shadow-sm">
                       <i class="bi bi-search fs-3 d-block mb-2"></i>
-                      Nenhum registro encontrado para os filtros selecionados.
+                      Nenhum registro encontrado para o mês e filtros selecionados.
                   </div>
               </div>
           <?php else: ?>
@@ -245,20 +269,19 @@ $proximos_eventos = $stmtProximos->fetchAll();
                                   </div>
                               <?php endif; ?>
 
-                              <div class="card-text text-secondary mb-2">
-                                  <?= formatarLinksTexto($aula['conteudo']) ?>
+                              <div class="card-text text-secondary mb-3 text-truncate-3">
+                                  <?= strip_tags($aula['conteudo']) ?>
                               </div>
+
+                              <!-- BOTÃO PARA A PÁGINA DEDICADA DA AULA -->
+                              <a href="aula_detalhe.php?id=<?= $aula['id'] ?>" class="btn btn-sm btn-outline-primary w-100 mb-2">
+                                  <i class="bi bi-eye me-1"></i> Ver Conteúdo Completo
+                              </a>
                               
                               <?php if($aula['tem_atividade']): ?>
-                                  <div class="mb-2">
+                                  <div>
                                       <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle"></i> Possui atividade / aviso</span>
                                   </div>
-                              <?php endif; ?>
-
-                              <?php if(!empty($aula['imagem_anexo'])): ?>
-                                  <a href="uploads/<?= htmlspecialchars($aula['imagem_anexo']) ?>" target="_blank" class="btn btn-sm btn-outline-primary mt-1">
-                                      <i class="bi bi-image"></i> Ver Anexo/Lousa
-                                  </a>
                               <?php endif; ?>
                           </div>
                           <div class="card-footer bg-white border-0 text-muted small pb-3">
@@ -283,7 +306,7 @@ $proximos_eventos = $stmtProximos->fetchAll();
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body" id="modalBody"></div>
-      <div class="modal-footer">
+      <div class="modal-footer" id="modalFooter">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
       </div>
     </div>
@@ -297,13 +320,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var isMobile = window.innerWidth <= 768;
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
-        // FORÇA O VISUAL DE MÊS SEMPRE (MESMO EM DISPOSITIVOS MÓVEIS)
         initialView: 'dayGridMonth',
         initialDate: '<?= $data_inicial_calendario ?>',
         locale: 'pt-br',
         height: isMobile ? 'auto' : 680,
         
-        // Toolbar Dinâmica
         headerToolbar: isMobile ? {
             left: 'prev,next',
             center: 'title',
@@ -333,13 +354,23 @@ document.addEventListener('DOMContentLoaded', function() {
         events: 'api/api_eventos.php?semestre_id=<?= $semestre_id ?>',
         
         eventClick: function(info) {
+            if (info.jsEvent) {
+                info.jsEvent.preventDefault();
+            }
+
             var props = info.event.extendedProps;
+            
+            // Pega o ID e remove o texto 'aula_' para manter apenas o número puro
+            var rawId = info.event.id || props.id || '';
+            var aulaId = String(rawId).replace('aula_', '');
+
             var html = '';
+            var footerHtml = '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>';
 
             if (props.tipo === 'aula') {
-                document.getElementById('modalTitle').innerText = 'Diário de Aula - ' + props.materia;
+                document.getElementById('modalTitle').innerText = 'Diário de Aula - ' + (props.materia || '');
                 
-                html += '<p><strong><i class="bi bi-person"></i> Professor:</strong> ' + props.professor + '</p>';
+                html += '<p><strong><i class="bi bi-person"></i> Professor:</strong> ' + (props.professor || 'Não informado') + '</p>';
                 if (props.horario) {
                     html += '<p><strong><i class="bi bi-clock"></i> Horário:</strong> ' + props.horario + '</p>';
                 }
@@ -355,12 +386,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (props.imagem_anexo) {
                     html += '<a href="uploads/' + props.imagem_anexo + '" target="_blank" class="btn btn-sm btn-primary w-100 mt-2"><i class="bi bi-image"></i> Ver Anexo/Lousa</a>';
                 }
+
+                // Garante a montagem da URL apenas com o número da ID
+                if (aulaId) {
+                    footerHtml = '<a href="aula_detalhe.php?id=' + aulaId + '" class="btn btn-primary"><i class="bi bi-eye"></i> Abrir Página Dedicada</a> ' + footerHtml;
+                }
             } else {
-                document.getElementById('modalTitle').innerText = (props.categoria || 'Evento') + ' - ' + props.materia;
+                document.getElementById('modalTitle').innerText = (props.categoria || 'Evento') + ' - ' + (props.materia || '');
                 html += '<p><strong>Descrição:</strong> ' + (props.descricao || 'Sem descrição fornecida.') + '</p>';
             }
 
             document.getElementById('modalBody').innerHTML = html;
+            document.getElementById('modalFooter').innerHTML = footerHtml;
             modalElement.show();
         }
     });
@@ -402,5 +439,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-
 <?php require_once 'includes/footer.php'; ?>
