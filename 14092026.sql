@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: sql200.infinityfree.com
--- Tempo de geração: 25/08/2026 às 14:17
--- Versão do servidor: 11.4.12-MariaDB
+-- Tempo de geração: 14/09/2026 às 08:51
+-- Versão do servidor: 11.4.13-MariaDB
 -- Versão do PHP: 7.2.22
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -65,11 +65,29 @@ INSERT INTO `diario_aulas` (`id`, `materia_id`, `data_aula`, `horario`, `horario
 (21, 10, '2026-08-04', '1ª Aula', NULL, NULL, 'Sala 06', 'Presença da aula Projeto Integrador \r\nAviso: Adiantamento das aulas (Dia 8 e 15) não terá aula', 0, NULL, '2026-08-18 00:30:45'),
 (22, 4, '2026-08-18', '1ª e 2ª Aulas', NULL, NULL, 'Laboratório de Informática 05 e Sala 06', 'Formação dos grupos para o Projeto Integrador e divisão dos conteúdos (empréstimo na biblioteca das referencias bibliográficas de livros com base no siga) para a confecção do trabalho para entrega no final do 1° semestre.\r\n\r\nSegue Exemplo/Ajudas:\r\nhttps://drive.google.com/drive/folders/1xONBiRT3uv8Lwr9SMPwQpWGI79wf7i1Z?usp=sharing', 1, '', '2026-08-18 22:29:50'),
 (23, 6, '2026-08-19', '1ª e 2ª Aulas', NULL, NULL, 'Sala 06', 'Exercícios de Matemática \r\nTeoria dos conjuntos.\r\n.\r\n.\r\nhttps://drive.google.com/drive/folders/1QFDYMeZycemu15UO3CBzFom8WARWupGW?usp=sharing\r\n(Enviar no Teams)', 1, '', '2026-08-20 19:50:48'),
-(24, 4, '2026-08-20', '1ª e 2ª Aulas', NULL, NULL, 'Sala 06', 'Substituição da aula da Nirley. Escolha dos temas do seminário e grupos para apresentação. O nosso era o grupo 3.\r\n\r\nhttps://drive.google.com/drive/folders/1gqmr4lezIIAPJkteh3pEm__kSk_G188g?usp=sharing', 1, '', '2026-08-21 14:55:39'),
+(24, 4, '2026-08-20', '1ª e 2ª Aulas', NULL, NULL, 'Sala 06', 'Substituição da aula da Nirley. Escolha dos temas do seminário e grupos para apresentação. O nosso era o grupo 3. (apresentação dia 08/09/2026)\r\n\r\nhttps://drive.google.com/drive/folders/1gqmr4lezIIAPJkteh3pEm__kSk_G188g?usp=sharing\r\n\r\nhttps://centropaulasouza.sharepoint.com/:w:/r/sites/AdministracaoGeral-A1033-N-GESTAOEMPRESARIAL-178-20262/_layouts/15/Doc.aspx?action=edit&sourcedoc=%7Ba5dfd44d-42e7-4d8c-8677-93a960fc08af%7D&wdExp=TEAMS-TREATMENT&web=1', 1, '', '2026-08-21 14:55:39'),
 (25, 8, '2026-08-21', '1ª Aula', NULL, NULL, 'Sala 06', 'Atividade para entregar na próxima sexta 28/08/2026:\r\n- Escrever os verbos no caderno e pronunciar em voz alta do vídeo anexado\r\n\r\nhttps://youtu.be/bjgFgX2494E?is=HpnoxdhNbpK9hCzl\r\n\r\nAula foi sobre conjugação de verbo e predicados/infinitivo.', 1, '', '2026-08-23 22:19:30'),
 (26, 9, '2026-08-21', '2ª Aula', NULL, NULL, 'Sala 06', 'Lista de exercícios anexados para entregar dia sexta 28/08/2026:\r\n\r\nhttps://drive.google.com/drive/folders/1NCYIdn3ghlYm55GJmOCRaCmNy6iJyyLi', 1, '', '2026-08-23 22:22:42'),
 (27, 2, '2026-08-24', '1ª Aula', NULL, NULL, 'Laboratório de Informática 01', 'Funções Financeiras Excel\r\n\r\nJuros - Simples\r\n\r\nJuros - Composto\r\n\r\nJuros 10% (R$5000 -> R$5500)\r\n\r\n\r\nUma pessoa quer acumlar R$5000 000,00 para isso irá depositar R$ 5000 mensalmente por 20 anos em um fundo que rende 1,17% a.m. Qual o depósito inicial (VP)?\r\n\r\nR: =VP(1,17%; 240; -5000; 5000000; 0)\r\n\r\n\r\n\r\n=NPER(1,5%;0;-2000;20000)\r\n\r\n=PGTO(0,9%;12;5000)', 0, '', '2026-08-24 22:47:10'),
-(28, 3, '2026-08-24', '2ª Aula', NULL, NULL, 'Laboratório de Informática 01', 'Atividade documento anexado (Nosso tema é Máquinas Musculares)\r\n\r\nA tarefa dos grupos não será apenas resumir a parte correspondente do texto. O objetivo\r\nserá identificar como a autora caracteriza aquela forma de relação entre o ser humano\r\ne a máquina. Durante a leitura, o grupo deverá localizar informações que permitam\r\nresponder às seguintes questões:\r\n1. Que capacidade humana essas máquinas imitam, prolongam ou ampliam?\r\nIdentifiquem qual dimensão humana está principalmente relacionada àquele nível: força e\r\nmovimento, sentidos ou capacidades mentais.\r\n2. O que essas máquinas permitem que o ser humano passe a fazer de maneira\r\ndiferente?\r\nProcurem perceber se a máquina substitui uma atividade, amplia uma capacidade, registra\r\ninformações, processa símbolos ou modifica de outra maneira a ação humana.\r\n3. Quais exemplos a autora apresenta?\r\nLocalizem exemplos de máquinas, equipamentos ou tecnologias utilizados por Santaella\r\npara explicar o nível analisado.\r\n\r\n4. O que muda na relação entre o ser humano e a máquina na fase que o grupo está\r\nestudando?\r\n\r\nhttps://drive.google.com/drive/folders/1371oPcMKIfJEGcjA9PXBK5ZEVyFbPbET?usp=sharing\r\n\r\nhttps://centropaulasouza-my.sharepoint.com/:w:/r/personal/caroline_nunes3_aluno_cps_sp_gov_br/_layouts/15/Doc.aspx?sourcedoc=%7B39C30FD5-DD56-406E-808C-A2E7A4C5223D%7D&file=Document%202.docx&action=default&mobileredirect=true\r\n\r\nFazer a discussão na primeira aula e na segunda a gente apresenta (Apresentação 31/08/2026)', 1, '', '2026-08-25 00:24:17');
+(28, 3, '2026-08-24', '2ª Aula', NULL, NULL, 'Laboratório de Informática 01', 'Atividade documento anexado (Nosso tema é Máquinas Musculares)\r\n\r\nA tarefa dos grupos não será apenas resumir a parte correspondente do texto. O objetivo\r\nserá identificar como a autora caracteriza aquela forma de relação entre o ser humano\r\ne a máquina. Durante a leitura, o grupo deverá localizar informações que permitam\r\nresponder às seguintes questões:\r\n1. Que capacidade humana essas máquinas imitam, prolongam ou ampliam?\r\nIdentifiquem qual dimensão humana está principalmente relacionada àquele nível: força e\r\nmovimento, sentidos ou capacidades mentais.\r\n2. O que essas máquinas permitem que o ser humano passe a fazer de maneira\r\ndiferente?\r\nProcurem perceber se a máquina substitui uma atividade, amplia uma capacidade, registra\r\ninformações, processa símbolos ou modifica de outra maneira a ação humana.\r\n3. Quais exemplos a autora apresenta?\r\nLocalizem exemplos de máquinas, equipamentos ou tecnologias utilizados por Santaella\r\npara explicar o nível analisado.\r\n\r\n4. O que muda na relação entre o ser humano e a máquina na fase que o grupo está\r\nestudando?\r\n\r\nhttps://drive.google.com/drive/folders/1371oPcMKIfJEGcjA9PXBK5ZEVyFbPbET?usp=sharing\r\n\r\nhttps://centropaulasouza-my.sharepoint.com/:w:/r/personal/caroline_nunes3_aluno_cps_sp_gov_br/_layouts/15/Doc.aspx?sourcedoc=%7B39C30FD5-DD56-406E-808C-A2E7A4C5223D%7D&file=Document%202.docx&action=default&mobileredirect=true\r\n\r\nFazer a discussão na primeira aula e na segunda a gente apresenta (Apresentação 31/08/2026)', 1, '', '2026-08-25 00:24:17'),
+(29, 4, '2026-08-25', '1ª e 2ª Aulas', NULL, NULL, 'Laboratório de Informática 01 e Sala 06', 'Conteúdo da aula:\r\nhttps://drive.google.com/drive/folders/1JboNIG4v9_bxL9nMP7vXcOEfJ-FknwZ-?usp=sharing\r\n\r\nA Amabile deixou a aula dedicada para fazer atividades e trabalhos pendentes. Avisou que a aula de quinta 27/08/2026 será on-line, não sendo necessário vir para a faculdade.', 0, '', '2026-08-25 18:46:58'),
+(30, 6, '2026-08-26', '1ª e 2ª Aulas', NULL, NULL, 'Sala 06', 'Continuação conjuntos numérico\r\nExplorando Operações Aritméticas \r\nAlgébrica, problemas e equações \r\n\r\nExplorando os |N e |Z', 0, '6a8f766182959.jpg', '2026-08-26 23:27:29'),
+(31, 10, '2026-08-27', '1ª e 2ª Aulas', NULL, NULL, 'Online Teams.', 'Aula online (Não teve chamada), Amabile passou trabalho sobre PI.', 1, NULL, '2026-08-31 11:46:38'),
+(32, 8, '2026-08-28', '1ª Aula', NULL, NULL, 'Sala de Aula 06', 'tarefa \r\n1. assistir e treinar sem pausar o vídeo, treinar significa ler junto com o vídeo sem pausar, leitura em voz alta e responder exatamente o que o vídeo está pedindo. SEM PAUSAR - ou seja, solta fala a frase inteira junto com o vídeo e antes da próxima frase fala o nome do verbo usado, tudo sem pausar, o vídeo inteiro . \r\n2. ⁠depois, rever o vídeo, ir pausando e escrever no caderno cada frase , \r\n3. ⁠abaixo de cada frase , depois que escrever todas anote , no caderno, com S de sujeito e V de verbo e responda qual o sujeito o sujeito e qual verbo foi usado em cada uma das frases. \r\n4. ⁠faça isso com todas as frases do vídeo\r\n5. ⁠visto próx aula \r\n\r\nlink https://www.youtube.com/watch?v=MSwFNfj1WUk', 1, NULL, '2026-08-31 22:42:04'),
+(33, 9, '2026-08-28', '2ª Aula', NULL, NULL, 'Sala de Aula 06', 'Atividade para fazer no caderno\r\nFoto da apostila enviada no grupo no dia 28/08\r\nEntregar dia 04/09', 1, NULL, '2026-08-31 22:52:01'),
+(34, 2, '2026-08-31', '1ª Aula', NULL, NULL, 'Laboratório de Informática 01.', 'Atividades teams para entregar 14/09/2026 e 21/09/2026.', 1, '6a960b3c2d268.png', '2026-08-31 23:16:12'),
+(35, 6, '2026-09-02', '1ª e 2ª Aulas', NULL, NULL, 'Sala 06', 'Conjuntos números e operações com intervalo.\r\n\r\nhttps://drive.google.com/drive/folders/1xlknfpWcsBhlw-N0KpH72l-lC4xGXosO', 0, NULL, '2026-09-03 23:49:30'),
+(36, 8, '2026-09-04', '2ª Aula', NULL, NULL, 'Sala 06', 'Correção da atividade da última aula. Atividade em grupo, leitura e interpretação de texto.', 1, NULL, '2026-09-05 22:49:00'),
+(37, 9, '2026-09-04', '2ª Aula', NULL, NULL, 'Sala 06', 'Aula vaga.', 0, NULL, '2026-09-05 22:49:15'),
+(38, 7, '2026-09-03', '1ª e 2ª Aulas', NULL, NULL, 'Sala 06', 'Retorno Nirley.', 0, '', '2026-09-05 22:51:35'),
+(39, 4, '2026-09-08', '1ª e 2ª Aulas', NULL, NULL, 'Laboratório de Informática 05 e Sala 06', 'Apresentação dos Trabalhos sobre Teoria da Administração Geral.', 0, NULL, '2026-09-09 17:52:28'),
+(40, 10, '2026-09-05', '1ª e 2ª Aulas', NULL, NULL, 'Teams', 'Primeira aula de projeto integrador Teams.', 1, NULL, '2026-09-09 17:52:53'),
+(41, 6, '2026-09-09', '1ª e 2ª Aulas', NULL, NULL, 'Sala de Aula 06', 'Exercício- Problemas sobre quantidade\r\nProva 1 dia', 0, NULL, '2026-09-09 22:40:46'),
+(42, 6, '2026-09-09', '1ª e 2ª Aulas', NULL, NULL, 'Sala de Aula 06', 'Exercício - Problemas com quantidades\r\nProva dia 30/09 \r\n\r\nLISTA DE EXERCÍCIO NO TEAMS PARA RESOLVER E ENTREGAR DIA 29/09', 1, NULL, '2026-09-09 22:41:44'),
+(43, 7, '2026-09-10', '1ª e 2ª Aulas', NULL, NULL, 'Sala de Aula 06', 'Atividade em dupla adiada por conta da chuva\r\nNão foi passado nada de importante apenas falta', 0, NULL, '2026-09-13 21:17:41'),
+(44, 8, '2026-09-11', '1ª Aula', NULL, NULL, 'Sala de Aula 06', 'Suspensão da aula por conta da chuva', 0, NULL, '2026-09-13 21:18:27'),
+(45, 9, '2026-09-11', '2ª Aula', NULL, NULL, 'Sala de Aula 06', 'Suspensão da aula por conta da chuva', 0, NULL, '2026-09-13 21:18:50'),
+(46, 10, '2026-09-12', '1ª Aula', NULL, NULL, 'Teams', 'Dia 26/09 Entrega dos words \"Papel do Gestor\" e Breafing pessoal\"', 1, NULL, '2026-09-13 21:19:46');
 
 -- --------------------------------------------------------
 
@@ -95,7 +113,11 @@ INSERT INTO `eventos_calendario` (`id`, `materia_id`, `data_evento`, `tipo`, `de
 (3, 7, '2026-08-13', 'Outro', 'Café e apresentação do projeto integrador dos alunos do 2 semestre.'),
 (4, 3, '2026-09-28', 'Prova', 'Prova P1'),
 (5, 3, '2026-11-30', 'Prova', 'Prova P2'),
-(6, 3, '2026-12-14', 'Trabalho', 'Trabalho SUB');
+(6, 3, '2026-12-14', 'Trabalho', 'Seminário'),
+(7, 4, '2026-09-01', 'Outro', 'Aula Magna'),
+(8, 2, '2026-09-07', 'Outro', 'Feriado.'),
+(9, 7, '2026-09-07', 'Outro', 'Feriado.'),
+(10, 6, '2026-09-30', 'Prova', 'Prova 1');
 
 -- --------------------------------------------------------
 
@@ -156,7 +178,9 @@ CREATE TABLE `noticias_eventos` (
 INSERT INTO `noticias_eventos` (`id`, `titulo`, `subtitulo`, `conteudo`, `tipo`, `data_evento`, `imagem_capa`, `fixado`, `status`, `usuario_id`, `created_at`, `updated_at`) VALUES
 (2, 'Divulgação Estágio Guarany', 'Estágio Obrigatório', 'Oportunidade de estágio. CADASTREM O CURRICULO:\r\nhttps://www.guaranyind.com.br/\r\ntrabalhe conosco', 'Estágio/Vaga', '2026-07-30', 'noticia_6a7a135f11a2d.png', 0, 'publicado', 1, '2026-08-10 18:07:27', '2026-08-18 16:24:11'),
 (4, 'Vaga na equipe de TCC', 'Vaga Gestão Empresarial', 'Estamos com o projeto do nosso TCC \r\n💡 Buscamos +1 integrante que queira somar em:\r\n\r\n-Redação e estrutura da documentação (Normas ABNT);\r\n-Apoio em testes de sistema e regras de negócio.\r\n\r\nSe você está sem grupo ou quer fechar uma equipe chama no Teams! 📥\r\nGustavo Munhoz Pivato ou Gustavo Alves Menezes Lopes', 'Estágio/Vaga', '2026-07-29', 'noticia_6a7a1c8b1d41c.png', 0, 'publicado', 3, '2026-08-10 18:46:35', '2026-08-10 22:41:58'),
-(5, 'ACC Horas Complementares Obrigatórias - Gestão Empresarial', 'ACC', 'Atenção, alunos de Gestão Empresarial da Fatec Itu: de acordo com a Portaria FATEC ITU nº 001/2024, é obrigatória a comprovação de no mínimo 40 horas de Atividades Acadêmico-Científico-Culturais (AACC) até o final do 5º semestre do curso, mediante a entrega da Ficha de Acompanhamento preenchida e acompanhada das cópias dos comprovantes na Secretaria Acadêmica. Fiquem atentos aos prazos e às atividades válidas (como cursos de extensão, eventos científicos, trabalhos voluntários e visitas técnicas), pois o não cumprimento das horas exigidas acarreta a retenção do estudante no curso até a sua totalização.\r\n\r\nhttps://drive.google.com/drive/folders/1nCdTIH2pyHcRseeoh4OcH2R-F3bfVi7K?usp=sharing', 'Aviso Institucional', '2026-08-18', NULL, 1, 'publicado', 1, '2026-08-18 16:16:37', '2026-08-18 16:16:37');
+(5, 'ACC Horas Complementares Obrigatórias - Gestão Empresarial', 'ACC', 'Atenção, alunos de Gestão Empresarial da Fatec Itu: de acordo com a Portaria FATEC ITU nº 001/2024, é obrigatória a comprovação de no mínimo 40 horas de Atividades Acadêmico-Científico-Culturais (AACC) até o final do 5º semestre do curso, mediante a entrega da Ficha de Acompanhamento preenchida e acompanhada das cópias dos comprovantes na Secretaria Acadêmica. Fiquem atentos aos prazos e às atividades válidas (como cursos de extensão, eventos científicos, trabalhos voluntários e visitas técnicas), pois o não cumprimento das horas exigidas acarreta a retenção do estudante no curso até a sua totalização.\r\n\r\nhttps://drive.google.com/drive/folders/1nCdTIH2pyHcRseeoh4OcH2R-F3bfVi7K?usp=sharing', 'Aviso Institucional', '2026-08-18', NULL, 1, 'publicado', 1, '2026-08-18 16:16:37', '2026-08-18 16:16:37'),
+(7, 'Grade 1° Semestre', 'Horários e Salas', 'Segue grade atual referente ao 1° Semestre do curso de Gestão Empresarial.', 'Noticia', '2026-08-25', 'noticia_6a8e25277838b.jpeg', 0, 'publicado', 1, '2026-08-25 23:25:42', '2026-08-25 23:28:38'),
+(8, 'Cancelamento Aulas 11/09/26', 'Alerta defesa civil', 'Cancelamento das aulas 11/09/26 devido as fortes chuvas regionais. Aula de comunicação e expressão.', 'Noticia', '2026-09-11', 'noticia_6aa7e9cf598e0.png', 0, 'publicado', 1, '2026-09-14 12:34:23', '2026-09-14 12:35:18');
 
 -- --------------------------------------------------------
 
@@ -257,13 +281,13 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de tabela `diario_aulas`
 --
 ALTER TABLE `diario_aulas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT de tabela `eventos_calendario`
 --
 ALTER TABLE `eventos_calendario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de tabela `materias`
@@ -275,7 +299,7 @@ ALTER TABLE `materias`
 -- AUTO_INCREMENT de tabela `noticias_eventos`
 --
 ALTER TABLE `noticias_eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de tabela `semestres`
